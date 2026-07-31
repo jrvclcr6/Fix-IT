@@ -1,0 +1,6 @@
+{
+  "name": "FixIT",
+  "description": "An offline computer troubleshooting assistant with rule-based diagnostic engine, step-by-step repair guides, safety alerts, history, and bookmarks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["OFFLINE_GUIDED_TROUBLESHOOTING", "LOCAL_HISTORY_AND_BOOKMARKS"]
+}
