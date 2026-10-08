@@ -27,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.R
 import com.example.ui.MainViewModel
 import com.example.ui.components.IconMapper
+import com.example.ui.components.IllustrationMapper
 import com.example.ui.theme.FixItBlueContainer
 import com.example.ui.theme.FixItBluePrimary
 
@@ -56,7 +58,7 @@ import com.example.ui.theme.FixItBluePrimary
 fun ResultPossibleCauseScreen(
     viewModel: MainViewModel,
     onBackClick: () -> Unit,
-    onViewFixClick: () -> Unit
+    onViewFixClick: (String) -> Unit
 ) {
     val resultState by viewModel.diagnosticResult.collectAsStateWithLifecycle()
     val result = resultState
@@ -78,7 +80,7 @@ fun ResultPossibleCauseScreen(
                         text = "Possible Cause",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -86,7 +88,7 @@ fun ResultPossibleCauseScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF001D36)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -103,14 +105,14 @@ fun ResultPossibleCauseScreen(
                         Icon(
                             imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
                             contentDescription = "Bookmark",
-                            tint = if (isBookmarked) Color(0xFF005CBB) else Color(0xFF43474E)
+                            tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -127,10 +129,10 @@ fun ResultPossibleCauseScreen(
                 // Illustration Card
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         shape = RoundedCornerShape(24.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(180.dp)
@@ -139,25 +141,42 @@ fun ResultPossibleCauseScreen(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            val drawableRes = when (result.mostLikelyCause.id) {
-                                "cause_ram" -> R.drawable.img_ram_repair_1785497686389
-                                "cause_psu" -> R.drawable.img_psu_repair_1785497672881
-                                else -> null
-                            }
-                            if (drawableRes != null) {
-                                Image(
-                                    painter = painterResource(id = drawableRes),
-                                    contentDescription = result.mostLikelyCause.title,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(24.dp))
+                            Image(
+                                painter = painterResource(
+                                    id = IllustrationMapper.result(
+                                        result.mostLikelyCause.id,
+                                        result.issue.categoryId
+                                    )
+                                ),
+                                contentDescription = result.mostLikelyCause.title,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(24.dp))
+                            )
+                        }
+                    }
+                }
+
+                if (result.userAnswers.isNotEmpty()) {
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            shape = RoundedCornerShape(20.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(Modifier.fillMaxWidth().padding(16.dp)) {
+                                Text(
+                                    text = "Why this result",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
-                            } else {
-                                Icon(
-                                    imageVector = IconMapper.getIcon(result.issue.iconName),
-                                    contentDescription = result.issue.title,
-                                    tint = Color(0xFF005CBB),
-                                    modifier = Modifier.size(72.dp)
-                                )
+                                Spacer(Modifier.height(8.dp))
+                                result.userAnswers.entries.forEach { (question, answer) ->
+                                    Text(question, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(answer, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(bottom = 8.dp))
+                                }
                             }
                         }
                     }
@@ -166,10 +185,10 @@ fun ResultPossibleCauseScreen(
                 // Most Likely Cause Card
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         shape = RoundedCornerShape(24.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
@@ -186,18 +205,18 @@ fun ResultPossibleCauseScreen(
                                     text = "Most Likely Cause",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp,
-                                    color = Color(0xFF005CBB)
+                                    color = MaterialTheme.colorScheme.primary
                                 )
 
                                 Surface(
                                     shape = RoundedCornerShape(12.dp),
-                                    color = Color(0xFFD3E4FF)
+                                    color = MaterialTheme.colorScheme.primaryContainer
                                 ) {
                                     Text(
                                         text = "${result.confidencePercentage}% Match",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF001D36),
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                                     )
                                 }
@@ -209,7 +228,7 @@ fun ResultPossibleCauseScreen(
                                 text = result.mostLikelyCause.title,
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF001D36)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
 
                             Spacer(modifier = Modifier.height(8.dp))
@@ -217,7 +236,7 @@ fun ResultPossibleCauseScreen(
                             Text(
                                 text = result.mostLikelyCause.description,
                                 fontSize = 14.sp,
-                                color = Color(0xFF43474E),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 20.sp
                             )
                         }
@@ -231,16 +250,16 @@ fun ResultPossibleCauseScreen(
                             text = "Alternative Possible Causes",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF001D36)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     items(result.alternativeCauses) { altCause ->
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             shape = RoundedCornerShape(20.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
@@ -252,13 +271,13 @@ fun ResultPossibleCauseScreen(
                                     text = altCause.title,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
-                                    color = Color(0xFF001D36)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = altCause.description,
                                     fontSize = 13.sp,
-                                    color = Color(0xFF43474E)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -270,8 +289,8 @@ fun ResultPossibleCauseScreen(
 
             // Action Button
             Button(
-                onClick = onViewFixClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005CBB)),
+                onClick = { onViewFixClick(result.mostLikelyCause.id) },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -282,7 +301,7 @@ fun ResultPossibleCauseScreen(
                     text = "View Fix / Solutions",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

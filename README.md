@@ -8,25 +8,28 @@ FixIT helps users identify likely computer faults through symptom-based question
 
 ## Highlights
 
-- 19 guided issues across hardware, Windows, networking, performance, display, peripherals, and safety hazards
+- 35 guided issues across hardware, Windows, networking, performance, display, peripherals, and safety hazards
 - Weighted diagnosis restricted to causes relevant to the selected issue
 - Safety interruptions for liquid exposure, swollen batteries, smoke, sparks, and other dangerous conditions
 - Step-by-step repairs with difficulty, estimated time, tools, warnings, and professional-escalation guidance
 - Symptom-aware search across issue descriptions, questions, answers, aliases, and repair causes
 - Offline bookmarks, completed-diagnosis history, and resumable sessions using Room
+- A searchable, status-filtered repair journal for personal issues, attempted fixes, solutions, and camera or gallery photos
+- Repair outcomes that record whether a fix worked and guide unsuccessful attempts to the next ranked cause
+- Seven offline category illustrations and a responsive light/dark Material 3 interface
 - Catalog-integrity checks that catch missing questions, broken cause links, duplicate options, and invalid repair steps
 
 ## Troubleshooting coverage
 
 | Area | Included examples |
 | --- | --- |
-| Hardware | No power, overheating, battery charging, missing SSD/HDD |
-| Windows and apps | BSOD, boot failure, application crashes |
-| Internet | Connected without internet, unstable Wi-Fi, Ethernet/IP faults |
-| Performance | High CPU/RAM usage, slow startup and storage |
-| Display | No signal, flicker, graphics artifacts |
-| Peripherals | Printer offline, USB device not recognized |
-| Safety and POST | Liquid spills, beep codes, diagnostic lights |
+| Hardware | No power, overheating, random restarts, noisy fans, battery charging, missing SSD/HDD |
+| Windows and apps | BSOD, boot failure, sign-in/PIN faults, malware alerts, updates, application crashes |
+| Internet | Missing or slow Wi-Fi, connected without internet, unstable Wi-Fi, Ethernet/IP faults |
+| Performance | High CPU/RAM or disk usage, slow startup and storage, gaming stutter |
+| Display | No signal, scaling/resolution, flicker, graphics artifacts |
+| Peripherals | Printer, USB, audio, Bluetooth, keyboard, mouse/touchpad, and webcam faults |
+| Safety, firmware, and POST | Liquid spills, beep codes, diagnostic lights, and resetting BIOS/clock settings |
 
 ## Technology
 

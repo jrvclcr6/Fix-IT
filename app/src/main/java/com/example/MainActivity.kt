@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,9 +30,13 @@ import com.example.ui.screens.HistoryScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.IssueDetailScreen
 import com.example.ui.screens.ResultPossibleCauseScreen
+import com.example.ui.screens.RepairOutcomeScreen
+import com.example.ui.screens.RepairJournalEditorScreen
+import com.example.ui.screens.RepairJournalScreen
 import com.example.ui.screens.SafetyWarningScreen
 import com.example.ui.screens.SplashScreen
 import com.example.ui.screens.StepByStepGuideScreen
+import com.example.ui.screens.NEW_JOURNAL_ENTRY_ID
 import com.example.ui.theme.FixITTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +47,7 @@ class MainActivity : ComponentActivity() {
             FixITTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFFF8FAFC)
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     FixItApp()
                 }
@@ -176,8 +181,8 @@ fun FixItApp(viewModel: MainViewModel = viewModel()) {
             ResultPossibleCauseScreen(
                 viewModel = viewModel,
                 onBackClick = { navController.navigateUp() },
-                onViewFixClick = {
-                    navController.navigate(Screen.FixOverview.createRoute(issueId))
+                onViewFixClick = { causeId ->
+                    navController.navigate(Screen.FixOverview.createRoute(issueId, causeId))
                 }
             )
         }
@@ -185,10 +190,15 @@ fun FixItApp(viewModel: MainViewModel = viewModel()) {
         // Fix Overview (Solutions list)
         composable(
             route = Screen.FixOverview.route,
-            arguments = listOf(navArgument("issueId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("issueId") { type = NavType.StringType },
+                navArgument("causeId") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val issueId = backStackEntry.arguments?.getString("issueId") ?: ""
+            val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
             FixOverviewScreen(
+                causeId = causeId,
                 viewModel = viewModel,
                 onBackClick = { navController.navigateUp() },
                 onViewStepByStepGuideClick = { causeId ->
@@ -211,8 +221,42 @@ fun FixItApp(viewModel: MainViewModel = viewModel()) {
                 viewModel = viewModel,
                 onBackClick = { navController.navigateUp() },
                 onFinishGuideClick = {
+                    val issueId = backStackEntry.arguments?.getString("issueId") ?: ""
+                    navController.navigate(Screen.RepairOutcome.createRoute(issueId, causeId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.RepairOutcome.route,
+            arguments = listOf(
+                navArgument("issueId") { type = NavType.StringType },
+                navArgument("causeId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val issueId = backStackEntry.arguments?.getString("issueId") ?: ""
+            val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
+            RepairOutcomeScreen(
+                issueId = issueId,
+                causeId = causeId,
+                viewModel = viewModel,
+                onBackClick = { navController.navigateUp() },
+                onTryNextCause = { nextCauseId ->
+                    navController.navigate(Screen.FixOverview.createRoute(issueId, nextCauseId))
+                },
+                onRestartDiagnosis = {
+                    viewModel.startTroubleshooting(issueId)
+                    navController.navigate(Screen.QuestionFlow.createRoute(issueId))
+                },
+                onHome = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
+                onHistory = {
+                    navController.navigate(Screen.History.route) {
+                        popUpTo(Screen.Home.route)
+                        launchSingleTop = true
                     }
                 }
             )
@@ -255,6 +299,40 @@ fun FixItApp(viewModel: MainViewModel = viewModel()) {
                     }
                 },
                 currentRoute = currentRoute
+            )
+        }
+
+        composable(Screen.RepairJournal.route) {
+            RepairJournalScreen(
+                viewModel = viewModel,
+                onAddEntry = {
+                    navController.navigate(Screen.RepairJournalEditor.createRoute(NEW_JOURNAL_ENTRY_ID))
+                },
+                onEditEntry = { entryId ->
+                    navController.navigate(Screen.RepairJournalEditor.createRoute(entryId))
+                },
+                onNavigate = { route ->
+                    if (currentRoute != route) {
+                        navController.navigate(route) {
+                            popUpTo(Screen.Home.route)
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                currentRoute = currentRoute
+            )
+        }
+
+        composable(
+            route = Screen.RepairJournalEditor.route,
+            arguments = listOf(navArgument("entryId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val entryId = backStackEntry.arguments?.getInt("entryId") ?: NEW_JOURNAL_ENTRY_ID
+            RepairJournalEditorScreen(
+                entryId = entryId,
+                viewModel = viewModel,
+                onBackClick = { navController.navigateUp() },
+                onSaved = { navController.popBackStack() }
             )
         }
 

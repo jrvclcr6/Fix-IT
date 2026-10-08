@@ -27,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -69,16 +70,16 @@ fun BookmarksScreen(
                         text = "Saved Bookmarks",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = {
             FixItBottomBar(currentRoute = currentRoute, onNavigate = onNavigate)
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -97,14 +98,14 @@ fun BookmarksScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Surface(
                             shape = CircleShape,
-                            color = Color(0xFFD3E4FF),
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             modifier = Modifier.size(80.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.BookmarkBorder,
                                     contentDescription = "No Bookmarks",
-                                    tint = Color(0xFF005CBB),
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(40.dp)
                                 )
                             }
@@ -114,13 +115,13 @@ fun BookmarksScreen(
                             text = "No Saved Bookmarks Yet",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF001D36)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Save troubleshooting guides for quick offline access during repairs.",
                             fontSize = 14.sp,
-                            color = Color(0xFF43474E),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 24.dp)
                         )
                     }
@@ -159,10 +160,10 @@ fun BookmarkItemCard(
     val dateStr = dateFormat.format(Date(bookmark.timestamp))
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .fillMaxWidth()
             .testTag("bookmark_item_${bookmark.issueId}")
@@ -179,13 +180,13 @@ fun BookmarkItemCard(
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFD3E4FF)
+                    color = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Text(
                         text = bookmark.categoryName,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF001D36),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
@@ -194,7 +195,7 @@ fun BookmarkItemCard(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete",
-                        tint = Color(0xFF74777F)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -205,7 +206,7 @@ fun BookmarkItemCard(
                 text = bookmark.issueTitle,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF001D36)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -213,7 +214,7 @@ fun BookmarkItemCard(
             Text(
                 text = "Cause: ${bookmark.diagnosedCauseTitle}",
                 fontSize = 13.sp,
-                color = Color(0xFF43474E)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -226,19 +227,19 @@ fun BookmarkItemCard(
                 Text(
                     text = "Saved $dateStr",
                     fontSize = 12.sp,
-                    color = Color(0xFF74777F)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Button(
                     onClick = onStartRepair,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005CBB)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(12.dp),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = "Open",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -246,7 +247,7 @@ fun BookmarkItemCard(
                         text = "Open Guide",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

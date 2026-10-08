@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,26 +44,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.model.SolutionStep
 import com.example.data.model.Cause
 import com.example.ui.MainViewModel
+import com.example.ui.components.InfoChip
 import com.example.ui.theme.FixItBlueContainer
 import com.example.ui.theme.FixItBluePrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FixOverviewScreen(
+    causeId: String,
     viewModel: MainViewModel,
     onBackClick: () -> Unit,
     onViewStepByStepGuideClick: (String) -> Unit
 ) {
-    val resultState by viewModel.diagnosticResult.collectAsStateWithLifecycle()
-    val result = resultState
-    if (result == null) {
+    val cause = viewModel.repositoryData.getCauseById(causeId)
+    if (cause == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No diagnostic result available")
         }
         return
     }
-
-    val cause = result.mostLikelyCause
 
     Scaffold(
         topBar = {
@@ -72,7 +72,7 @@ fun FixOverviewScreen(
                         text = "Fix It! (Solutions)",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -80,14 +80,14 @@ fun FixOverviewScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF001D36)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -99,10 +99,10 @@ fun FixOverviewScreen(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Follow these steps to fix the problem:",
-                    fontSize = 16.sp,
+                    text = cause.title,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF001D36)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -125,7 +125,7 @@ fun FixOverviewScreen(
                     viewModel.setGuideCause(cause)
                     onViewStepByStepGuideClick(cause.id)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005CBB)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -136,7 +136,7 @@ fun FixOverviewScreen(
                     text = "View Step-by-Step Guide",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -146,27 +146,26 @@ fun FixOverviewScreen(
 @Composable
 fun RepairReadinessCard(cause: Cause) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFD3E4FF)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth().testTag("repair_readiness_card")
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text("Before you start", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF001D36))
+            Text("Before you start", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "${cause.difficulty.label} • About ${cause.estimatedMinutes} min • ${cause.solutions.size} steps",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF005CBB)
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                InfoChip(cause.difficulty.label)
+                InfoChip("${cause.estimatedMinutes} min")
+                InfoChip("${cause.solutions.size} steps")
+            }
             if (cause.toolsRequired.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Tools: ${cause.toolsRequired.joinToString()}", fontSize = 13.sp, color = Color(0xFF001D36))
+                Text("Tools: ${cause.toolsRequired.joinToString()}", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
             }
             cause.seekProfessionalHelpWhen?.let {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Get help when: $it", fontSize = 13.sp, color = Color(0xFF7A1D1D), lineHeight = 18.sp)
+                Text("Get help when: $it", fontSize = 13.sp, color = MaterialTheme.colorScheme.error, lineHeight = 18.sp)
             }
         }
     }
@@ -175,10 +174,10 @@ fun RepairReadinessCard(cause: Cause) {
 @Composable
 fun SolutionStepOverviewCard(step: SolutionStep) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -189,7 +188,7 @@ fun SolutionStepOverviewCard(step: SolutionStep) {
         ) {
             Surface(
                 shape = CircleShape,
-                color = Color(0xFF005CBB),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(32.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -197,7 +196,7 @@ fun SolutionStepOverviewCard(step: SolutionStep) {
                         text = "${step.stepNumber}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -209,13 +208,13 @@ fun SolutionStepOverviewCard(step: SolutionStep) {
                     text = step.title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = Color(0xFF001D36)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = step.description,
                     fontSize = 13.sp,
-                    color = Color(0xFF43474E),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 18.sp
                 )
             }

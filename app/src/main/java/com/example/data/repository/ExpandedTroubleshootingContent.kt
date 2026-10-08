@@ -175,6 +175,62 @@ internal fun expandedIssues(): List<Issue> = listOf(
         ), listOf("unknown usb device", "flash drive missing", "usb port", "device manager")
     ),
     Issue(
+        "issue_audio_01", "cat_peripheral", "No sound from speakers or headphones",
+        "Windows shows the computer is running, but speakers or headphones produce no audio.", "volume_off",
+        listOf(
+            question("q_audio_1", "Where should the sound be coming from?",
+                option("opt_audio_1a", "A", "Built-in speakers", "cause_audio_output" to 5),
+                option("opt_audio_1b", "B", "Wired headphones or headset", "cause_audio_output" to 5),
+                option("opt_audio_1c", "C", "Bluetooth headset or speaker", "cause_audio_output" to 3, "cause_audio_driver" to 3)),
+            question("q_audio_2", "What do you see in the Windows sound controls?",
+                option("opt_audio_2a", "A", "The wrong output device is selected", "cause_audio_output" to 5),
+                option("opt_audio_2b", "B", "The correct device is selected but audio is muted", "cause_audio_output" to 4),
+                option("opt_audio_2c", "C", "The device is missing or has a warning icon", "cause_audio_driver" to 5))
+        ), listOf("no audio", "no sound", "headphones silent", "speakers not working", "muted")
+    ),
+    Issue(
+        "issue_bluetooth_01", "cat_peripheral", "Bluetooth device won't connect",
+        "A mouse, keyboard, headset, speaker, or other Bluetooth accessory will not pair or keeps disconnecting.", "bluetooth_disabled",
+        listOf(
+            question("q_bluetooth_1", "What happens when you try to connect?",
+                option("opt_bluetooth_1a", "A", "The device does not appear in the list", "cause_bluetooth_adapter" to 5),
+                option("opt_bluetooth_1b", "B", "It appears but pairing fails", "cause_bluetooth_pairing" to 5),
+                option("opt_bluetooth_1c", "C", "It pairs, then disconnects", "cause_bluetooth_adapter" to 4)),
+            question("q_bluetooth_2", "What has been checked already?",
+                option("opt_bluetooth_2a", "A", "The accessory is not charged or may be connected elsewhere", "cause_bluetooth_pairing" to 5),
+                option("opt_bluetooth_2b", "B", "Bluetooth was turned off and back on", "cause_bluetooth_adapter" to 3),
+                option("opt_bluetooth_2c", "C", "The Bluetooth adapter has a warning in Device Manager", "cause_bluetooth_adapter" to 5))
+        ), listOf("bluetooth pairing", "bluetooth not found", "wireless headset", "bluetooth mouse")
+    ),
+    Issue(
+        "issue_keyboard_01", "cat_peripheral", "Keyboard keys not working or typing wrong",
+        "Some keys do nothing, repeat unexpectedly, or type different characters than the keys pressed.", "keyboard",
+        listOf(
+            question("q_keyboard_1", "How does the keyboard problem appear?",
+                option("opt_keyboard_1a", "A", "The whole keyboard is unresponsive", "cause_keyboard_connection" to 5),
+                option("opt_keyboard_1b", "B", "Only a few keys do not work", "cause_keyboard_connection" to 4),
+                option("opt_keyboard_1c", "C", "Keys type the wrong characters", "cause_keyboard_layout" to 5)),
+            question("q_keyboard_2", "Does another keyboard behave the same way?",
+                option("opt_keyboard_2a", "A", "No, another keyboard works normally", "cause_keyboard_connection" to 5),
+                option("opt_keyboard_2b", "B", "Yes, both keyboards type wrong characters", "cause_keyboard_layout" to 5),
+                option("opt_keyboard_2c", "C", "I have not tested another keyboard", "cause_keyboard_connection" to 2, "cause_keyboard_layout" to 2))
+        ), listOf("keyboard not working", "keys not working", "wrong characters", "keyboard typing wrong")
+    ),
+    Issue(
+        "issue_update_01", "cat_software", "Windows update failed or stuck",
+        "Windows Update remains at one percentage, repeatedly fails, or rolls back after restarting.", "system_update_alt",
+        listOf(
+            question("q_update_1", "What is Windows Update doing?",
+                option("opt_update_1a", "A", "It is stuck at the same percentage", "cause_update_cache" to 5),
+                option("opt_update_1b", "B", "It shows an error code and fails", "cause_update_services" to 5),
+                option("opt_update_1c", "C", "It installs then rolls back", "cause_update_services" to 4)),
+            question("q_update_2", "What is the computer's current condition?",
+                option("opt_update_2a", "A", "The system drive has very little free space", "cause_update_cache" to 5),
+                option("opt_update_2b", "B", "The PC has been restarted and the error remains", "cause_update_services" to 4),
+                option("opt_update_2c", "C", "A VPN, security tool, or cleanup utility is active", "cause_update_services" to 4))
+        ), listOf("windows update failed", "update stuck", "update error", "windows update rollback")
+    ),
+    Issue(
         "issue_beep_01", "cat_other", "PC beeps and won't start",
         "The computer emits a repeating beep pattern or motherboard diagnostic light and does not boot.", "notifications_active",
         listOf(
@@ -311,6 +367,50 @@ internal fun expandedCauses(): List<Cause> = listOf(
         step(2, "Reinstall the failed device", "In Device Manager, uninstall only the device with the warning icon, then scan for hardware changes."),
         step(3, "Install official drivers", "Install chipset and device drivers from the PC or device manufacturer.")),
         RepairDifficulty.BEGINNER, 20),
+
+    Cause("cause_audio_output", "issue_audio_01", "Wrong output, mute, or cable connection", "Windows may be sending audio to another device, or the selected speakers/headphones are muted or disconnected.", listOf(
+        step(1, "Select the correct output", "Open Settings > System > Sound and choose the speakers or headphones you want to use."),
+        step(2, "Check volume and connections", "Raise the app and system volume, clear mute, and reseat the headphone or speaker cable."),
+        step(3, "Test another output", "Try another port or a known-good headset to separate a device problem from a Windows setting.")),
+        RepairDifficulty.BEGINNER, 15, listOf("Known-good headset"), "The port is loose, damaged, or produces crackling and heat."),
+    Cause("cause_audio_driver", "issue_audio_01", "Audio driver or Windows audio service fault", "The audio device is missing, disabled, or its driver/service is not responding.", listOf(
+        step(1, "Restart Windows audio", "Restart the PC and check that Windows Audio is running in Services."),
+        step(2, "Check Device Manager", "Open Sound, video and game controllers and enable the device if disabled."),
+        step(3, "Install the manufacturer driver", "Install the audio driver from the PC or motherboard manufacturer's support page.")),
+        RepairDifficulty.BEGINNER, 20, emptyList(), "The audio device is missing after hardware damage or remains unavailable with the official driver."),
+
+    Cause("cause_bluetooth_pairing", "issue_bluetooth_01", "Accessory is not ready to pair", "The accessory may be off, out of range, low on charge, or still paired with another device.", listOf(
+        step(1, "Charge and enter pairing mode", "Charge the accessory, turn it off and on, then hold its pairing button until the indicator flashes."),
+        step(2, "Remove the old pairing", "In Settings > Bluetooth & devices, remove the old entry and pair it again from nearby."),
+        step(3, "Reduce interference", "Keep the accessory close to the PC and temporarily disconnect it from phones or tablets.")),
+        RepairDifficulty.BEGINNER, 15),
+    Cause("cause_bluetooth_adapter", "issue_bluetooth_01", "Bluetooth adapter, driver, or power state fault", "The PC adapter may be disabled, stuck after sleep, or using an incompatible driver.", listOf(
+        step(1, "Toggle Bluetooth and restart", "Turn Bluetooth off and on, then restart the PC and accessory."),
+        step(2, "Check the adapter", "In Device Manager, enable the Bluetooth adapter and install the PC manufacturer's driver if it has a warning."),
+        step(3, "Disable power saving", "Open the adapter's Power Management settings and prevent Windows from turning it off to save power.")),
+        RepairDifficulty.BEGINNER, 20, emptyList(), "The adapter is absent from Device Manager or fails with every Bluetooth device."),
+
+    Cause("cause_keyboard_connection", "issue_keyboard_01", "Keyboard connection or hardware fault", "A USB/Bluetooth connection, cable, battery, or keyboard switch may be failing.", listOf(
+        step(1, "Reconnect directly", "Reconnect the keyboard to another USB port without a hub, or charge it and re-enter Bluetooth pairing mode."),
+        step(2, "Check for obstruction", "Power off, turn the keyboard over, and remove loose debris without forcing keys or liquid into the switches."),
+        step(3, "Cross-test the keyboard", "Test the keyboard on another computer or test a known-good keyboard on this PC.")),
+        RepairDifficulty.BEGINNER, 15, listOf("Known-good keyboard"), "The keyboard has liquid damage, a swollen battery, or fails on multiple computers."),
+    Cause("cause_keyboard_layout", "issue_keyboard_01", "Wrong Windows keyboard layout or input mode", "Windows may be using another language/layout, Num Lock state, or an accessibility input setting.", listOf(
+        step(1, "Check the input layout", "Select the intended language and keyboard layout from the taskbar input indicator."),
+        step(2, "Test common toggles", "Check Num Lock, Caps Lock, and disable Filter Keys if keystrokes are delayed or ignored."),
+        step(3, "Remove unused layouts", "Open Settings > Time & language > Language & region and remove layouts you do not use.")),
+        RepairDifficulty.BEGINNER, 10),
+
+    Cause("cause_update_cache", "issue_update_01", "Corrupt update cache or insufficient disk space", "Downloaded update files or a nearly full Windows drive can prevent the update from completing.", listOf(
+        step(1, "Free drive space", "Open Settings > System > Storage and keep at least 15% of the Windows drive free."),
+        step(2, "Run the troubleshooter", "Open Settings > System > Troubleshoot > Other troubleshooters and run Windows Update."),
+        step(3, "Clear the update cache", "Stop Windows Update, clear the contents of C:\\Windows\\SoftwareDistribution\\Download, then restart the service.")),
+        RepairDifficulty.INTERMEDIATE, 30, emptyList(), "The drive reports errors, is encrypted without a recovery key, or the update is a major version upgrade."),
+    Cause("cause_update_services", "issue_update_01", "Windows Update service or conflicting software", "A stopped service, VPN, security tool, or damaged system component can interrupt installation.", listOf(
+        step(1, "Disconnect conflicts", "Temporarily disconnect a VPN and close cleanup utilities; leave trusted antivirus protection enabled unless its vendor says otherwise."),
+        step(2, "Check required services", "Confirm Windows Update, Background Intelligent Transfer Service, and Cryptographic Services are running."),
+        step(3, "Repair system files", "Run `DISM /Online /Cleanup-Image /RestoreHealth`, then `sfc /scannow` in an elevated Command Prompt and restart.")),
+        RepairDifficulty.INTERMEDIATE, 35, emptyList(), "The same error returns after repair, the PC is managed by an organization, or the update fails during rollback."),
 
     Cause("cause_beep_memory", "issue_beep_01", "RAM failed the startup self-test", "A loose, incompatible, or failed memory module is preventing POST.", listOf(
         step(1, "Identify the code", "Record the exact beep or diagnostic-light pattern and check the motherboard or PC service manual."),

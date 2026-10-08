@@ -18,13 +18,20 @@ sealed class Screen(val route: String) {
     object ResultPossibleCause : Screen("result_cause/{issueId}") {
         fun createRoute(issueId: String) = "result_cause/$issueId"
     }
-    object FixOverview : Screen("fix_overview/{issueId}") {
-        fun createRoute(issueId: String) = "fix_overview/$issueId"
+    object FixOverview : Screen("fix_overview/{issueId}/{causeId}") {
+        fun createRoute(issueId: String, causeId: String) = "fix_overview/$issueId/$causeId"
     }
     object StepByStepGuide : Screen("step_by_step_guide/{issueId}/{causeId}") {
         fun createRoute(issueId: String, causeId: String) = "step_by_step_guide/$issueId/$causeId"
     }
+    object RepairOutcome : Screen("repair_outcome/{issueId}/{causeId}") {
+        fun createRoute(issueId: String, causeId: String) = "repair_outcome/$issueId/$causeId"
+    }
     object Bookmarks : Screen("bookmarks")
     object History : Screen("history")
+    object RepairJournal : Screen("repair_journal")
+    object RepairJournalEditor : Screen("repair_journal_editor/{entryId}") {
+        fun createRoute(entryId: Int) = "repair_journal_editor/$entryId"
+    }
     object About : Screen("about")
 }

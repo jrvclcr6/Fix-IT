@@ -11,13 +11,13 @@ import com.example.data.model.SolutionStep
 class TroubleshootingRepository {
 
     val categories: List<Category> = listOf(
-        Category("cat_hardware", "Hardware Problems", "Power, motherboard, RAM, PSU, and internal components", "desktop_windows", 5),
-        Category("cat_software", "Software Problems", "Operating system crashes, boot errors, BSOD, and drivers", "code", 3),
-        Category("cat_internet", "Internet Problems", "Wi-Fi connectivity, DNS errors, router, and ethernet", "wifi", 3),
-        Category("cat_performance", "Performance Problems", "System slowdowns, 100% CPU/RAM usage, and gaming lag", "speed", 2),
-        Category("cat_display", "Display Problems", "No signal, screen flickering, black screen, and artifacts", "monitor", 2),
-        Category("cat_peripheral", "Peripheral Problems", "Printers, Bluetooth, webcams, and external storage", "print", 2),
-        Category("cat_other", "Other Problems", "Liquid spills, beep codes, CMOS battery, and safety hazards", "warning", 2)
+        Category("cat_hardware", "Hardware Problems", "Power, motherboard, cooling, RAM, PSU, and internal components", "desktop_windows", 7),
+        Category("cat_software", "Software Problems", "Windows, sign-in, updates, malware, crashes, and drivers", "code", 6),
+        Category("cat_internet", "Internet Problems", "Wi-Fi connectivity, speed, DNS, router, and ethernet", "wifi", 5),
+        Category("cat_performance", "Performance Problems", "System slowdowns, disk usage, resource load, and gaming lag", "speed", 4),
+        Category("cat_display", "Display Problems", "No signal, scaling, flickering, black screen, and artifacts", "monitor", 3),
+        Category("cat_peripheral", "Peripheral Problems", "Printers, input devices, audio, webcams, Bluetooth, and USB", "print", 7),
+        Category("cat_other", "Other Problems", "Liquid spills, beep codes, firmware settings, and safety hazards", "warning", 3)
     )
 
     private val issuesMap: Map<String, Issue> = (listOf(
@@ -97,8 +97,8 @@ class TroubleshootingRepository {
         Issue(
             id = "issue_heat_01",
             categoryId = "cat_hardware",
-            title = "Computer overheating or shutting down",
-            description = "Computer turns off suddenly while gaming, rendering, or after 15-30 minutes of usage.",
+            title = "PC getting very hot or shutting down",
+            description = "The PC gets unusually hot, fans become loud, or it turns off suddenly during games or other demanding tasks.",
             iconName = "thermostat",
             questions = listOf(
                 Question(
@@ -226,7 +226,7 @@ class TroubleshootingRepository {
                 )
             )
         )
-    ) + expandedIssues()).associateBy { it.id }
+    ) + expandedIssues() + advancedIssues()).associateBy { it.id }
 
     // Causes & Step-by-Step Solutions
     private val causesMap: Map<String, Cause> = (listOf(
@@ -354,7 +354,7 @@ class TroubleshootingRepository {
                 SolutionStep(3, "Air Dry for Minimum 48 Hours", "Leave in a warm, dry room with air circulation for 48-72 hours before attempting power on.", null, "Do NOT use a hairdryer on high heat as it melts keyboard keycaps.")
             )
         )
-    ) + expandedCauses()).associateBy { it.id }
+    ) + expandedCauses() + advancedCauses()).associateBy { it.id }
 
     fun getAllCategories(): List<Category> = categories
 

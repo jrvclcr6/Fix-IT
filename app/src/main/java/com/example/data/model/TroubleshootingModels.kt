@@ -53,6 +53,12 @@ enum class RepairDifficulty(val label: String) {
     ADVANCED("Advanced")
 }
 
+enum class RepairOutcome(val label: String) {
+    FIXED("Fixed"),
+    NOT_FIXED("Not fixed"),
+    SKIPPED("Skipped")
+}
+
 data class SolutionStep(
     val stepNumber: Int,
     val title: String,

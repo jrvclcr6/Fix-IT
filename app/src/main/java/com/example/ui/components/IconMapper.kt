@@ -2,26 +2,40 @@ package com.example.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.BatteryAlert
+import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.DesktopWindows
 import androidx.compose.material.icons.filled.Equalizer
 import androidx.compose.material.icons.filled.HourglassBottom
+import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Monitor
+import androidx.compose.material.icons.filled.Mouse
+import androidx.compose.material.icons.filled.NetworkCheck
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SettingsEthernet
 import androidx.compose.material.icons.filled.SignalWifiBad
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.TvOff
 import androidx.compose.material.icons.filled.Usb
+import androidx.compose.material.icons.filled.VideocamOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.Wifi
@@ -55,6 +69,21 @@ object IconMapper {
             "broken_image" -> Icons.Default.BrokenImage
             "usb" -> Icons.Default.Usb
             "notifications_active" -> Icons.Default.NotificationsActive
+            "volume_off" -> Icons.AutoMirrored.Filled.VolumeOff
+            "bluetooth_disabled" -> Icons.Default.BluetoothDisabled
+            "keyboard" -> Icons.Default.Keyboard
+            "system_update_alt" -> Icons.Default.SystemUpdateAlt
+            "air" -> Icons.Default.Air
+            "password" -> Icons.Default.Password
+            "security" -> Icons.Default.Security
+            "wifi_find" -> Icons.Default.WifiOff
+            "network_check" -> Icons.Default.NetworkCheck
+            "data_usage" -> Icons.Default.DataUsage
+            "sports_esports" -> Icons.Default.SportsEsports
+            "aspect_ratio" -> Icons.Default.AspectRatio
+            "mouse" -> Icons.Default.Mouse
+            "videocam_off" -> Icons.Default.VideocamOff
+            "schedule" -> Icons.Default.Schedule
             else -> Icons.AutoMirrored.Filled.HelpOutline
         }
     }

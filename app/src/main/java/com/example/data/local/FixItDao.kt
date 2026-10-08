@@ -9,6 +9,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FixItDao {
 
+    // Repair Journal
+    @Query("SELECT * FROM repair_journal ORDER BY updatedAt DESC, id DESC")
+    fun getAllJournalEntries(): Flow<List<RepairJournalEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveJournalEntry(entry: RepairJournalEntity): Long
+
+    @Query("DELETE FROM repair_journal WHERE id = :id")
+    suspend fun deleteJournalEntryById(id: Int)
+
     // Bookmarks
     @Query("SELECT * FROM bookmarks ORDER BY timestamp DESC")
     fun getAllBookmarks(): Flow<List<BookmarkEntity>>
@@ -34,6 +44,27 @@ interface FixItDao {
 
     @Query("DELETE FROM history")
     suspend fun clearHistory()
+
+    @Query(
+        """
+        UPDATE history
+        SET repairOutcome = :outcome,
+            attemptedCauseId = :causeId,
+            attemptedCauseTitle = :causeTitle
+        WHERE id = (
+            SELECT id FROM history
+            WHERE issueId = :issueId
+            ORDER BY timestamp DESC, id DESC
+            LIMIT 1
+        )
+        """
+    )
+    suspend fun updateLatestHistoryOutcome(
+        issueId: String,
+        causeId: String,
+        causeTitle: String,
+        outcome: String
+    ): Int
 
     // Unfinished Sessions
     @Query("SELECT * FROM unfinished_sessions ORDER BY timestamp DESC")

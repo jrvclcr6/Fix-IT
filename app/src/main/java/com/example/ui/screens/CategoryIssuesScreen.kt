@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.Issue
 import com.example.ui.MainViewModel
 import com.example.ui.components.IconMapper
+import com.example.ui.components.CategoryArtwork
 import com.example.ui.theme.FixItBlueContainer
 import com.example.ui.theme.FixItBluePrimary
 
@@ -64,7 +66,7 @@ fun CategoryIssuesScreen(
                         text = category?.name ?: "Category Issues",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -72,17 +74,17 @@ fun CategoryIssuesScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF001D36)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color(0xFF001D36)
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -94,7 +96,7 @@ fun CategoryIssuesScreen(
             // Category Header Banner Card
             if (category != null) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD3E4FF)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     shape = RoundedCornerShape(24.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -105,32 +107,23 @@ fun CategoryIssuesScreen(
                             .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = Color.White,
-                            modifier = Modifier.size(64.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = IconMapper.getIcon(category.iconName),
-                                    contentDescription = category.name,
-                                    tint = Color(0xFF005CBB),
-                                    modifier = Modifier.size(36.dp)
-                                )
-                            }
-                        }
+                        CategoryArtwork(
+                            categoryId = category.id,
+                            categoryName = category.name,
+                            modifier = Modifier.fillMaxWidth().height(160.dp).clip(RoundedCornerShape(18.dp))
+                        )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = category.name,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = Color(0xFF001D36)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = category.description,
                             fontSize = 13.sp,
-                            color = Color(0xFF43474E)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -139,10 +132,10 @@ fun CategoryIssuesScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Example Issues",
+                text = "Issues (${issues.size})",
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp,
-                color = Color(0xFF001D36)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -160,10 +153,10 @@ fun CategoryIssuesScreen(
 
             // Bottom Tip Card
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -175,14 +168,14 @@ fun CategoryIssuesScreen(
                     Icon(
                         imageVector = Icons.Default.Lightbulb,
                         contentDescription = "Tip",
-                        tint = Color(0xFF005CBB),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(22.dp)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Tip: Select an issue that best describes your problem.",
                         fontSize = 13.sp,
-                        color = Color(0xFF001D36),
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -198,10 +191,10 @@ fun IssueItemRow(
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .fillMaxWidth()
             .testTag("issue_row_${issue.id}")
@@ -213,17 +206,42 @@ fun IssueItemRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = issue.title,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                color = Color(0xFF001D36),
-                modifier = Modifier.weight(1f)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = IconMapper.getIcon(issue.iconName),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = issue.title,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(Modifier.height(3.dp))
+                    Text(
+                        text = issue.description,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2
+                    )
+                }
+            }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Open",
-                tint = Color(0xFF74777F)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

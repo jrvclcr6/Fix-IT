@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -52,6 +53,7 @@ import com.example.R
 import com.example.ui.MainViewModel
 import com.example.ui.theme.FixItBlueContainer
 import com.example.ui.theme.FixItBluePrimary
+import com.example.ui.components.IllustrationMapper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +91,7 @@ fun StepByStepGuideScreen(
                         text = "Step-by-Step Guide",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -97,14 +99,14 @@ fun StepByStepGuideScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF001D36)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -124,7 +126,7 @@ fun StepByStepGuideScreen(
                     text = "Step ${currentStepIndex + 1} of $totalSteps",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF005CBB),
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -138,8 +140,8 @@ fun StepByStepGuideScreen(
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    color = Color(0xFF005CBB),
-                    trackColor = Color(0xFFE1E2EC)
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.outlineVariant
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -149,7 +151,7 @@ fun StepByStepGuideScreen(
                     text = step.title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF001D36),
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -157,17 +159,13 @@ fun StepByStepGuideScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Only show an illustration when the step actually has one.
-                val imageRes = when (step.imageDrawableName) {
-                    "img_ram_repair_1785497686389" -> R.drawable.img_ram_repair_1785497686389
-                    "img_psu_repair_1785497672881" -> R.drawable.img_psu_repair_1785497672881
-                    else -> null
-                }
+                val imageRes = IllustrationMapper.repairStep(step.imageDrawableName)
                 if (imageRes != null) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         shape = RoundedCornerShape(24.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier.fillMaxWidth().height(220.dp)
                     ) {
                         Image(
@@ -184,7 +182,7 @@ fun StepByStepGuideScreen(
                 Text(
                     text = step.description,
                     fontSize = 15.sp,
-                    color = Color(0xFF43474E),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 22.sp
                 )
 
@@ -193,7 +191,7 @@ fun StepByStepGuideScreen(
                 // Tip/Warning callout if available
                 if (!step.tipOrWarning.isNullOrBlank()) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFD3E4FF)),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -207,14 +205,14 @@ fun StepByStepGuideScreen(
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Tip",
-                                tint = Color(0xFF005CBB),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = step.tipOrWarning,
                                 fontSize = 13.sp,
-                                color = Color(0xFF001D36),
+                                color = MaterialTheme.colorScheme.onSurface,
                                 lineHeight = 18.sp,
                                 fontWeight = FontWeight.Medium
                             )
@@ -234,7 +232,7 @@ fun StepByStepGuideScreen(
                     OutlinedButton(
                         onClick = { viewModel.setGuideStep(currentStepIndex - 1) },
                         shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE1E2EC)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                         modifier = Modifier
                             .weight(1f)
                             .height(52.dp)
@@ -244,7 +242,7 @@ fun StepByStepGuideScreen(
                             text = "Back",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF43474E)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -258,7 +256,7 @@ fun StepByStepGuideScreen(
                             viewModel.setGuideStep(currentStepIndex + 1)
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005CBB)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .weight(1f)
@@ -266,10 +264,10 @@ fun StepByStepGuideScreen(
                         .testTag("guide_next_button")
                 ) {
                     Text(
-                        text = if (isLastStep) "Finish Repair" else "Next Step",
+                        text = if (isLastStep) "Finish & review" else "Next Step",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

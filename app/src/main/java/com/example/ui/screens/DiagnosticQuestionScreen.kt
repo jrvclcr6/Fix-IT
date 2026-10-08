@@ -27,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -81,7 +82,7 @@ fun DiagnosticQuestionScreen(
                         text = "Question ${currentQuestionIndex + 1} of $totalQuestions",
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -92,14 +93,14 @@ fun DiagnosticQuestionScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF001D36)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -118,8 +119,8 @@ fun DiagnosticQuestionScreen(
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    color = Color(0xFF005CBB),
-                    trackColor = Color(0xFFE1E2EC)
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.outlineVariant
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -129,7 +130,7 @@ fun DiagnosticQuestionScreen(
                         text = currentQuestion.text,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF001D36),
+                        color = MaterialTheme.colorScheme.onSurface,
                         lineHeight = 28.sp
                     )
 
@@ -170,8 +171,10 @@ fun DiagnosticQuestionScreen(
                 },
                 enabled = selectedOptionId != null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF005CBB),
-                    disabledContainerColor = Color(0xFFCBD5E1)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
@@ -183,7 +186,7 @@ fun DiagnosticQuestionScreen(
                     text = if (isLastQuestion) "See Result" else "Next Question",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = if (selectedOptionId != null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -196,10 +199,10 @@ fun OptionCard(
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
-    val containerColor = if (isSelected) Color(0xFFD3E4FF) else Color.White
-    val borderColor = if (isSelected) Color(0xFF005CBB) else Color(0xFFE1E2EC)
-    val letterBgColor = if (isSelected) Color(0xFF005CBB) else Color(0xFFD3E4FF)
-    val letterTextColor = if (isSelected) Color.White else Color(0xFF005CBB)
+    val containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+    val letterBgColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
+    val letterTextColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
 
     Card(
         onClick = onSelect,
@@ -238,7 +241,7 @@ fun OptionCard(
                 text = option.text,
                 fontSize = 15.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) Color(0xFF001D36) else Color(0xFF1A1C1E),
+                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
         }

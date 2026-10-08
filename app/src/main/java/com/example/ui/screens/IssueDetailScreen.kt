@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lightbulb
@@ -23,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.MainViewModel
 import com.example.ui.components.IconMapper
+import com.example.ui.components.CategoryArtwork
+import com.example.ui.components.InfoChip
 import com.example.ui.theme.FixItBlueContainer
 import com.example.ui.theme.FixItBluePrimary
 
@@ -62,14 +67,14 @@ fun IssueDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF001D36)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         if (issue == null) {
             Box(
@@ -91,25 +96,17 @@ fun IssueDetailScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
+                    modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    Surface(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(28.dp)),
-                        color = Color(0xFFD3E4FF)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = IconMapper.getIcon(issue.iconName),
-                                contentDescription = issue.title,
-                                tint = Color(0xFF005CBB),
-                                modifier = Modifier.size(64.dp)
-                            )
-                        }
-                    }
+                    val categoryName = viewModel.repositoryData.getCategoryById(issue.categoryId)?.name ?: "Troubleshooting"
+                    CategoryArtwork(
+                        categoryId = issue.categoryId,
+                        categoryName = categoryName,
+                        modifier = Modifier.fillMaxWidth().height(190.dp).clip(RoundedCornerShape(28.dp))
+                    )
 
                     Spacer(modifier = Modifier.height(28.dp))
 
@@ -117,7 +114,7 @@ fun IssueDetailScreen(
                         text = issue.title,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF001D36),
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
 
@@ -126,46 +123,37 @@ fun IssueDetailScreen(
                     Text(
                         text = issue.description,
                         fontSize = 15.sp,
-                        color = Color(0xFF43474E),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Button(
-                        onClick = {
-                            viewModel.startTroubleshooting(issue.id)
-                            onStartTroubleshootingClick()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005CBB)),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .testTag("start_troubleshooting_button")
-                    ) {
-                        Text(
-                            text = "Start Troubleshooting",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
-
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "We'll help you find the cause and fix the problem.",
-                        fontSize = 14.sp,
-                        color = Color(0xFF43474E),
-                        textAlign = TextAlign.Center
-                    )
+                    androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        InfoChip("${issue.questions.size} questions")
+                        InfoChip("About ${issue.questions.size * 2} min")
+                        InfoChip("Offline")
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
+
+                Button(
+                    onClick = {
+                        viewModel.startTroubleshooting(issue.id)
+                        onStartTroubleshootingClick()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp).testTag("start_troubleshooting_button")
+                ) {
+                    Text("Start guided diagnosis", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Bottom Tip Box
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD3E4FF)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     shape = RoundedCornerShape(20.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -178,14 +166,14 @@ fun IssueDetailScreen(
                     ) {
                         Surface(
                             shape = CircleShape,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.surface,
                             modifier = Modifier.size(36.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.Lightbulb,
                                     contentDescription = "Tip",
-                                    tint = Color(0xFF005CBB),
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -194,7 +182,7 @@ fun IssueDetailScreen(
                         Text(
                             text = "Make sure to answer each question honestly for more accurate results.",
                             fontSize = 13.sp,
-                            color = Color(0xFF001D36),
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Medium
                         )
                     }

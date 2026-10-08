@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -57,7 +58,7 @@ fun SafetyWarningScreen(
         ?: "CRITICAL SAFETY HAZARD DETECTED: Hazardous electrical or hardware conditions require immediate precautions!"
 
     Scaffold(
-        containerColor = Color(0xFFFEF2F2)
+        containerColor = MaterialTheme.colorScheme.errorContainer
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -75,14 +76,14 @@ fun SafetyWarningScreen(
 
                 Surface(
                     shape = CircleShape,
-                    color = Color(0xFFFEE2E2),
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.size(96.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = "Hazard Warning",
-                            tint = Color(0xFFDC2626),
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(56.dp)
                         )
                     }
@@ -94,7 +95,7 @@ fun SafetyWarningScreen(
                     text = "CRITICAL SAFETY WARNING",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF991B1B),
+                    color = MaterialTheme.colorScheme.onErrorContainer,
                     textAlign = TextAlign.Center,
                     letterSpacing = 0.5.sp
                 )
@@ -102,10 +103,10 @@ fun SafetyWarningScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     shape = RoundedCornerShape(24.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFCA5A5)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -117,7 +118,7 @@ fun SafetyWarningScreen(
                             text = warningMessage,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF991B1B),
+                            color = MaterialTheme.colorScheme.error,
                             lineHeight = 22.sp
                         )
 
@@ -127,7 +128,7 @@ fun SafetyWarningScreen(
                             text = "Mandatory Safety Checklist:",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -148,7 +149,10 @@ fun SafetyWarningScreen(
                     onClick = {
                         onProceedAnyway()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    ),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -159,14 +163,14 @@ fun SafetyWarningScreen(
                         text = "Acknowledge Safety & Continue",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onError
                     )
                 }
 
                 OutlinedButton(
                     onClick = onReturnHome,
                     shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
@@ -175,7 +179,7 @@ fun SafetyWarningScreen(
                     Text(
                         text = "Abort & Return Home",
                         fontSize = 15.sp,
-                        color = Color(0xFF475569)
+                        color = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }
@@ -194,7 +198,7 @@ fun SafetyStepBullet(text: String) {
         Text(
             text = text,
             fontSize = 13.sp,
-            color = Color(0xFF334155),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 18.sp
         )
     }

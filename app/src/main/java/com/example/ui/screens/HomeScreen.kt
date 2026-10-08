@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
@@ -30,6 +32,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -40,6 +43,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +57,8 @@ import com.example.data.local.UnfinishedSessionEntity
 import com.example.ui.MainViewModel
 import com.example.ui.components.FixItBottomBar
 import com.example.ui.components.IconMapper
+import com.example.ui.components.CategoryArtwork
+import com.example.R
 import com.example.ui.theme.FixItBlueContainer
 import com.example.ui.theme.FixItBluePrimary
 
@@ -73,7 +80,7 @@ fun HomeScreen(
         bottomBar = {
             FixItBottomBar(currentRoute = currentRoute, onNavigate = onNavigate)
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -93,7 +100,7 @@ fun HomeScreen(
                         text = "FixIT",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Black,
-                        color = Color(0xFF001D36),
+                        color = MaterialTheme.colorScheme.onSurface,
                         letterSpacing = (-0.5).sp
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -101,25 +108,16 @@ fun HomeScreen(
                         text = "Offline Troubleshooting Assistant",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFF43474E)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                Surface(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape),
-                    color = Color(0xFFD3E4FF)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "FX",
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF001D36),
-                            fontSize = 15.sp
-                        )
-                    }
-                }
+                Image(
+                    painter = painterResource(R.drawable.fixit_app_icon),
+                    contentDescription = "FixIT logo",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(46.dp).clip(RoundedCornerShape(14.dp))
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -128,21 +126,29 @@ fun HomeScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.setSearchQuery(it) },
-                placeholder = { Text("Search computer problems...", fontSize = 14.sp, color = Color(0xFF74777F)) },
+                placeholder = { Text("Search computer problems...", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = Color(0xFF43474E)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
+                trailingIcon = if (searchQuery.isNotBlank()) {
+                    {
+                        IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear search")
+                        }
+                    }
+                } else null,
                 singleLine = true,
                 shape = RoundedCornerShape(50.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF005CBB),
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color(0xFFE1E2EC)
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,7 +163,7 @@ fun HomeScreen(
                     text = "SEARCH RESULTS (${searchResults.size})",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF43474E),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 1.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -171,7 +177,7 @@ fun HomeScreen(
                     ) {
                         Text(
                             text = "No problems found matching '$searchQuery'",
-                            color = Color(0xFF74777F),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp
                         )
                     }
@@ -198,6 +204,7 @@ fun HomeScreen(
                             val activeSession = unfinishedSessions.first()
                             UnfinishedSessionCard(
                                 session = activeSession,
+                                totalQuestions = viewModel.repositoryData.getIssueById(activeSession.issueId)?.questions?.size ?: 1,
                                 onResumeClick = { onResumeSessionClick(activeSession) }
                             )
                         }
@@ -209,7 +216,7 @@ fun HomeScreen(
                             text = "QUICK CATEGORIES",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF43474E),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             letterSpacing = 1.sp
                         )
                     }
@@ -225,12 +232,11 @@ fun HomeScreen(
                     // Tip Box Card
                     item {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             shape = RoundedCornerShape(24.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.White, RoundedCornerShape(24.dp))
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
                                 modifier = Modifier
@@ -240,14 +246,14 @@ fun HomeScreen(
                             ) {
                                 Surface(
                                     shape = CircleShape,
-                                    color = Color(0xFFD3E4FF),
+                                    color = MaterialTheme.colorScheme.primaryContainer,
                                     modifier = Modifier.size(44.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Icon(
                                             imageVector = Icons.Default.Lightbulb,
                                             contentDescription = "Tip",
-                                            tint = Color(0xFF005CBB),
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(24.dp)
                                         )
                                     }
@@ -258,13 +264,13 @@ fun HomeScreen(
                                         text = "Guided Diagnosis Tip",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp,
-                                        color = Color(0xFF001D36)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
                                     Text(
                                         text = "Answer guided questions step-by-step to accurately identify hardware, printer, or network faults.",
                                         fontSize = 13.sp,
-                                        color = Color(0xFF43474E)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -304,17 +310,18 @@ fun CategoriesGridSection(
 @Composable
 fun CategoryCard(
     category: Category,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
-        modifier = Modifier
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
+        modifier = modifier
             .fillMaxWidth()
-            .height(118.dp)
+            .height(164.dp)
             .testTag("category_${category.id}")
     ) {
         Column(
@@ -324,32 +331,23 @@ fun CategoryCard(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.Start
         ) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color(0xFFD3E4FF),
-                modifier = Modifier.size(42.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = IconMapper.getIcon(category.iconName),
-                        contentDescription = category.name,
-                        tint = Color(0xFF005CBB),
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
+            CategoryArtwork(
+                categoryId = category.id,
+                categoryName = category.name,
+                modifier = Modifier.fillMaxWidth().height(86.dp).clip(RoundedCornerShape(16.dp))
+            )
 
             Column {
                 Text(
                     text = category.name,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1C1E)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "${category.issueCount} Issues",
                     fontSize = 12.sp,
-                    color = Color(0xFF74777F)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -363,10 +361,10 @@ fun SearchResultCard(
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -382,14 +380,14 @@ fun SearchResultCard(
             ) {
                 Surface(
                     shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFFD3E4FF),
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier.size(40.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = IconMapper.getIcon(issue.iconName),
                             contentDescription = issue.title,
-                            tint = Color(0xFF005CBB),
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -400,12 +398,12 @@ fun SearchResultCard(
                         text = issue.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color(0xFF1A1C1E)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = issue.description,
                         fontSize = 12.sp,
-                        color = Color(0xFF74777F),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
                     )
                 }
@@ -413,7 +411,7 @@ fun SearchResultCard(
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Start",
-                tint = Color(0xFF005CBB)
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -422,10 +420,11 @@ fun SearchResultCard(
 @Composable
 fun UnfinishedSessionCard(
     session: UnfinishedSessionEntity,
+    totalQuestions: Int,
     onResumeClick: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF005CBB)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = RoundedCornerShape(28.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
@@ -442,11 +441,11 @@ fun UnfinishedSessionCard(
                 Box(
                     modifier = Modifier
                         .size(8.dp)
-                        .background(Color(0xFF00FF00), CircleShape)
+                        .background(MaterialTheme.colorScheme.tertiary, CircleShape)
                 )
                 Text(
                     text = "ONGOING DIAGNOSIS",
-                    color = Color(0xFFD3E4FF),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp
@@ -457,7 +456,7 @@ fun UnfinishedSessionCard(
 
             Text(
                 text = session.issueTitle,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -466,7 +465,7 @@ fun UnfinishedSessionCard(
 
             Text(
                 text = "Question ${session.currentQuestionIndex + 1} in progress",
-                color = Color(0xFFD3E4FF),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 13.sp
             )
 
@@ -477,13 +476,13 @@ fun UnfinishedSessionCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
-                    .background(Color(0xFF004A99), RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
+                        .fillMaxWidth(((session.currentQuestionIndex + 1f) / totalQuestions.coerceAtLeast(1)).coerceIn(0f, 1f))
                         .height(8.dp)
-                        .background(Color(0xFF7CBFFF), RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
                 )
             }
 
@@ -492,7 +491,7 @@ fun UnfinishedSessionCard(
             // Resume button
             Card(
                 onClick = onResumeClick,
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFD3E4FF)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -508,14 +507,14 @@ fun UnfinishedSessionCard(
                     ) {
                         Text(
                             text = "Resume Fixing",
-                            color = Color(0xFF005CBB),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = "Resume",
-                            tint = Color(0xFF005CBB),
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                     }

@@ -8,7 +8,7 @@ FixIT is a local-first Android app built with Kotlin, Jetpack Compose, Navigatio
 
 The original project looked more complete than it was: category cards advertised 19 issues while the repository contained only 7, many answer weights referenced missing or cross-issue causes, and the confidence algorithm forced a minimum 65% match. Those defects could produce plausible-looking but unsupported results. The original test suite did not cover the product and still referenced template components.
 
-The current implementation contains 19 working issues, validates every catalog relationship, requires complete answers, ranks only causes belonging to the selected issue, and exposes practical repair-readiness information.
+The current implementation contains 35 working issues, validates every catalog relationship, requires complete answers, ranks only causes belonging to the selected issue, exposes practical repair-readiness information, and records repair outcomes with next-cause guidance.
 
 ## Architecture
 
@@ -16,7 +16,7 @@ The current implementation contains 19 working issues, validates every catalog r
 - `MainViewModel` owns active diagnosis, selected answers, guide progress, search state, and Room-backed flows.
 - `TroubleshootingRepository` is the offline source of truth for categories, issues, weighted options, causes, and repair steps.
 - `ExpandedTroubleshootingContent` isolates the larger content set from diagnosis logic.
-- Room stores bookmarks, completed history, and one unfinished session per issue.
+- Room stores bookmarks, completed history, one unfinished session per issue, and user-authored repair journal entries with optional private photo paths.
 - Compose screens render home/search, categories, issue details, questions, safety, results, repair overview, interactive steps, bookmarks, history, and about.
 
 The application has no runtime need for Firebase, Gemini, Retrofit, OkHttp, Moshi, or Coil. Those unused dependencies and the misleading API-key README were removed.
@@ -25,7 +25,7 @@ The application has no runtime need for Firebase, Gemini, Retrofit, OkHttp, Mosh
 
 ### Catalog and diagnosis integrity
 
-- Expanded the catalog from 7 to 19 actual issues, matching all category counts.
+- Expanded the catalog from 7 to 35 actual issues, matching all category counts.
 - Added 12 issues: battery charging, missing storage, Windows boot failure, app crashes, unstable Wi-Fi, Ethernet/IP faults, slow startup, display flicker, graphics artifacts, printer offline, USB recognition, and POST/beep codes.
 - Added 27 repair causes with actionable repair steps for the expanded and previously unsupported flows.
 - Corrected every legacy option that referenced a missing or cross-issue cause.
@@ -45,7 +45,7 @@ The application has no runtime need for Firebase, Gemini, Retrofit, OkHttp, Mosh
 - Steps without an illustration no longer display an unrelated PSU image.
 - Result screens use a relevant issue icon when no cause-specific illustration exists.
 - Safety acknowledgement returns to the diagnostic flow so remaining questions can be completed; it no longer attempts to produce an incomplete result.
-- New issue icon names now map to real Material icons instead of a generic fallback.
+- New issue icon names map to real Material icons instead of a generic fallback, and seven offline category illustrations provide consistent visual context.
 
 ### Build and maintainability
 
@@ -70,7 +70,7 @@ The application has no runtime need for Firebase, Gemini, Retrofit, OkHttp, Mosh
 ### High priority
 
 1. Add Compose navigation tests for safety interruption, session resume, result-to-guide, bookmark toggling, and process recreation.
-2. Add a repair outcome (`Fixed`, `Not fixed`, `Skipped`) and use it to recommend the next cause instead of ending every guide at Home.
+2. Add persisted multi-attempt audit detail if future requirements need every attempted cause retained rather than the latest outcome shown in history.
 3. Replace the legacy launcher bitmap variants. Lint reports inconsistent density metadata even though packaging succeeds.
 4. Add explicit Room migrations before changing the schema; destructive fallback has intentionally been removed.
 

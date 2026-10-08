@@ -25,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,16 +60,16 @@ fun AboutScreen(
                         text = "About FixIT",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = {
             FixItBottomBar(currentRoute = currentRoute, onNavigate = onNavigate)
         },
-        containerColor = Color(0xFFF3F6FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -80,10 +81,10 @@ fun AboutScreen(
         ) {
             // App Banner Header
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
@@ -96,7 +97,7 @@ fun AboutScreen(
                         modifier = Modifier
                             .size(72.dp)
                             .clip(RoundedCornerShape(20.dp)),
-                        color = Color(0xFFD3E4FF)
+                        color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp)) {
                             Image(
@@ -113,13 +114,13 @@ fun AboutScreen(
                         text = "FixIT",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF001D36)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
                         text = "Offline Computer Troubleshooting Assistant",
                         fontSize = 13.sp,
-                        color = Color(0xFF43474E)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -157,16 +158,16 @@ fun AboutScreen(
                 text = "PC Maintenance & Safety Rules",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF001D36)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD3E4FF)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
@@ -187,7 +188,7 @@ fun AboutScreen(
 
             // Disclaimer Box
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFD3E4FF)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -201,7 +202,7 @@ fun AboutScreen(
                     Icon(
                         imageVector = Icons.Default.Shield,
                         contentDescription = "Safety Shield",
-                        tint = Color(0xFF005CBB),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -210,13 +211,13 @@ fun AboutScreen(
                             text = "Safety Disclaimer",
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
-                            color = Color(0xFF001D36)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "FixIT provides diagnostic guidance for informational repair assistance. For dangerous electrical issues or swollen batteries, consult a certified technician.",
                             fontSize = 12.sp,
-                            color = Color(0xFF001D36),
+                            color = MaterialTheme.colorScheme.onSurface,
                             lineHeight = 17.sp
                         )
                     }
@@ -228,7 +229,7 @@ fun AboutScreen(
             Text(
                 text = "App Version 1.0.0 (Build 2026.07)",
                 fontSize = 12.sp,
-                color = Color(0xFF74777F),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
                 fontWeight = FontWeight.Medium
             )
@@ -242,7 +243,7 @@ fun FeatureCheckRow(text: String) {
         Icon(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = "Check",
-            tint = Color(0xFF005CBB),
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .size(18.dp)
                 .padding(top = 2.dp)
@@ -251,7 +252,7 @@ fun FeatureCheckRow(text: String) {
         Text(
             text = text,
             fontSize = 13.sp,
-            color = Color(0xFF43474E),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 18.sp
         )
     }

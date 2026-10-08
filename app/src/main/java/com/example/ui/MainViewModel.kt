@@ -6,10 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppDatabase
 import com.example.data.local.BookmarkEntity
 import com.example.data.local.HistoryEntity
+import com.example.data.local.JournalPhotoStorage
+import com.example.data.local.RepairJournalEntity
 import com.example.data.local.UnfinishedSessionEntity
 import com.example.data.model.Cause
 import com.example.data.model.DiagnosticResult
 import com.example.data.model.Issue
+import com.example.data.model.RepairOutcome
 import com.example.data.repository.TroubleshootingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,11 +21,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = TroubleshootingRepository()
     private val dao = AppDatabase.getDatabase(application).fixItDao()
+    private var historySaveJob: Job? = null
 
     // Room Flows
     val bookmarks: StateFlow<List<BookmarkEntity>> = dao.getAllBookmarks().stateIn(
@@ -32,6 +37,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     val history: StateFlow<List<HistoryEntity>> = dao.getAllHistory().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    val journalEntries: StateFlow<List<RepairJournalEntity>> = dao.getAllJournalEntries().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
@@ -127,7 +138,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         if (result != null) {
             val category = repository.getCategoryById(issue.categoryId)
-            viewModelScope.launch {
+            historySaveJob = viewModelScope.launch {
                 // Remove from unfinished sessions
                 dao.deleteUnfinishedSession(issue.id)
 
@@ -184,6 +195,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun saveJournalEntry(
+        entry: RepairJournalEntity,
+        previousPhotoPath: String?,
+        onSaved: () -> Unit
+    ) {
+        viewModelScope.launch {
+            dao.saveJournalEntry(entry)
+            if (previousPhotoPath != entry.photoPath) {
+                JournalPhotoStorage.delete(previousPhotoPath)
+            }
+            onSaved()
+        }
+    }
+
+    fun deleteJournalEntry(entry: RepairJournalEntity) {
+        viewModelScope.launch {
+            dao.deleteJournalEntryById(entry.id)
+            JournalPhotoStorage.delete(entry.photoPath)
+        }
+    }
+
     fun resumeUnfinishedSession(session: UnfinishedSessionEntity) {
         val issue = repository.getIssueById(session.issueId) ?: return
         _activeIssue.value = issue
@@ -209,5 +241,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setGuideStep(index: Int) {
         val cause = _activeCauseForGuide.value ?: return
         _guideStepIndex.value = index.coerceIn(0, cause.solutions.size - 1)
+    }
+
+    fun recordRepairOutcome(issueId: String, cause: Cause, outcome: RepairOutcome) {
+        viewModelScope.launch {
+            historySaveJob?.join()
+            dao.updateLatestHistoryOutcome(
+                issueId = issueId,
+                causeId = cause.id,
+                causeTitle = cause.title,
+                outcome = outcome.name
+            )
+        }
+    }
+
+    fun getNextRecommendedCause(currentCauseId: String): Cause? {
+        val result = _diagnosticResult.value ?: return null
+        val rankedCauses = listOf(result.mostLikelyCause) + result.alternativeCauses
+        val currentIndex = rankedCauses.indexOfFirst { it.id == currentCauseId }
+        if (currentIndex < 0) return null
+        return rankedCauses.getOrNull(currentIndex + 1)
     }
 }

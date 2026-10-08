@@ -20,7 +20,10 @@ data class HistoryEntity(
     val categoryName: String,
     val diagnosedCauseTitle: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val isCompleted: Boolean = true
+    val isCompleted: Boolean = true,
+    val repairOutcome: String? = null,
+    val attemptedCauseId: String? = null,
+    val attemptedCauseTitle: String? = null
 )
 
 @Entity(tableName = "unfinished_sessions")
@@ -31,4 +34,17 @@ data class UnfinishedSessionEntity(
     val currentQuestionIndex: Int,
     val selectedOptionIdsJson: String, // e.g. "q1:optA,q2:optB"
     val timestamp: Long = System.currentTimeMillis()
+)
+
+@Entity(tableName = "repair_journal")
+data class RepairJournalEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val title: String,
+    val issueDetails: String,
+    val actionsTaken: String,
+    val solution: String,
+    val isResolved: Boolean,
+    val photoPath: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )
